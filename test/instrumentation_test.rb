@@ -23,6 +23,21 @@ module InstrumentationTestMixin
 end
 
 class InstrumentationTest < Test::Unit::TestCase
+  class MockInstrument
+    attr_accessor :result
+    def initialize
+      @result = 'old_data'
+    end
+
+    def method_missing
+      nil
+    end
+
+    def clear!
+      @result = 'new_data'
+    end
+  end
+
   include DecisionTestMixin
   include InstrumentationTestMixin
     CSV0 = %{
@@ -33,6 +48,14 @@ class InstrumentationTest < Test::Unit::TestCase
     c,d,1
     e,f,2
   }
+
+  def test_instrument_cleared_each_run
+    table = Rufus::Decision::Table.new(CSV0)
+    table.instrument = MockInstrument.new
+    table.transform!("fx" => "c", "fy" => "d")
+    assert_equal('new_data', table.instrument.result, "calling transform should clear instrument")
+  end
+
 
   def test_without_accumulate
 
@@ -76,6 +99,7 @@ class InstrumentationTest < Test::Unit::TestCase
 
 
   end
+
 
 
 end
