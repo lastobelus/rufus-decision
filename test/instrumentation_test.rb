@@ -1,6 +1,6 @@
-
 require File.expand_path('../base.rb', __FILE__)
 
+require "rufus/decision/instruments/hash_instrument"
 module InstrumentationTestMixin
 
   protected
@@ -13,7 +13,8 @@ module InstrumentationTestMixin
       end
 
     table.instrument = Rufus::Decision::Instruments::HashInstrument.new
-    do_test(table_data, h, expected_result, verbose=false)
+    do_test(table, h, expected_result, verbose=false)
+    table
   end
 
   def assert_instrumentation(table, expected)

@@ -277,6 +277,12 @@ module Decision
     #
     attr_accessor :matchers
 
+    # instrument which will be populated with data about which cells/rows
+    # matched during a transform.
+    #
+    attr_accessor :instrument
+
+
     # The constructor for DecisionTable, you can pass a String, an Array
     # (of arrays), a File object. The CSV parser coming with Ruby will take
     # care of it and a DecisionTable instance will be built.
