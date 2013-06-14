@@ -339,10 +339,6 @@ module Decision
       parse_header_row
     end
 
-    def instrumented?
-      ! @instrument.nil?
-    end
-    
     # Like transform, but the original hash doesn't get touched,
     # a copy of it gets transformed and finally returned.
     #
@@ -357,6 +353,8 @@ module Decision
     def transform!(hash)
 
       instrument.clear! if instrumented?
+      instrument_table_info!
+
       hash = Rufus::Decision::EvalHashFilter.new(hash) if @options[:ruby_eval]
 
       @rows.each do |row|
@@ -550,7 +548,28 @@ module Decision
          @outs.keys.sort.collect { |k| "out:#{@outs[k]}" }).join(',')
       end
     end
+
+    # Instrumentation
+
+    # Whether table has an instrument assigned
+    # 
+    def instrumented?
+      ! @instrument.nil?
+    end
+
+    # 
+    def instrument_table_info!
+      return unless instrumented?
+      instrument.table_info(
+        rows: @rows.length,
+        ins: @header.ins.length,
+        outs: @header.outs.length,
+        options: options
+      )
+    end
+
   end
+
 
   # Given a CSV string or the URI / path to a CSV file, turns the CSV
   # into an array of array.

@@ -20,6 +20,10 @@ module InstrumentationTestMixin
   def assert_instrumentation(table, expected)
     assert_equal( expected, table.instrument.result, "instrumentation result should match expected")
   end
+
+  def default_table_options
+    {first_match: true, ignore_case: nil, unbounded:nil}
+  end
 end
 
 class InstrumentationTest < Test::Unit::TestCase
@@ -56,6 +60,13 @@ class InstrumentationTest < Test::Unit::TestCase
     assert_equal('new_data', table.instrument.result, "calling transform should clear instrument")
   end
 
+  def test_table_info
+    table = Rufus::Decision::Table.new(CSV0)
+    table.instrument = Rufus::Decision::Instruments::HashInstrument.new
+    table.transform!("fx" => "c", "fy" => "d")
+    assert_not_nil(table.instrument.result, "instrument result")
+    assert_not_nil(table.instrument.result[:table], "instrument result :table")
+  end
 
   def test_without_accumulate
 
@@ -66,7 +77,7 @@ class InstrumentationTest < Test::Unit::TestCase
     table = do_instrumented_test(CSV0, wi, { "fz" => "1" }, false)
     assert_instrumentation(
       table,
-      table: { rows: 3, ins: 2, outs: 1, options: [] },
+      table: { rows: 3, ins: 2, outs: 1, options: default_table_options },
       matches: {
         table: true,
         num: 1,
