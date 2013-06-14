@@ -339,6 +339,10 @@ module Decision
       parse_header_row
     end
 
+    def instrumented?
+      ! @instrument.nil?
+    end
+    
     # Like transform, but the original hash doesn't get touched,
     # a copy of it gets transformed and finally returned.
     #
@@ -352,6 +356,7 @@ module Decision
     #
     def transform!(hash)
 
+      instrument.clear! if instrumented?
       hash = Rufus::Decision::EvalHashFilter.new(hash) if @options[:ruby_eval]
 
       @rows.each do |row|

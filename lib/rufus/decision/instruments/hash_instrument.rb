@@ -5,6 +5,9 @@ module Rufus
         def result
           {}
         end
+
+        def clear!
+        end
       end
     end
   end
