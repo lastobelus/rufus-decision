@@ -53,6 +53,8 @@ module DecisionTestMixin
 
       assert_equal v, value
     end
+
+    table
   end
 end
 
