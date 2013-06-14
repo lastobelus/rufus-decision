@@ -27,6 +27,7 @@ CSV based Ruby decision tables
   ]
 
   s.add_development_dependency 'rake'
+  s.add_development_dependency 'guard-test'
 
   s.add_dependency 'rufus-dollar'
   s.add_dependency 'rufus-treechecker'
