@@ -357,8 +357,13 @@ module Decision
 
       hash = Rufus::Decision::EvalHashFilter.new(hash) if @options[:ruby_eval]
 
-      @rows.each do |row|
-        next unless matches?(row, hash)
+      @rows.each_with_index do |row, index|
+        unless matches?(row, hash)
+          instrument_row_matched!(false, index)
+          next
+        end
+        instrument_table_matched!
+        instrument_row_matched!(true, index)
         apply(row, hash)
         break if @options[:first_match]
       end
@@ -560,12 +565,22 @@ module Decision
     # 
     def instrument_table_info!
       return unless instrumented?
-      instrument.table_info(
+      instrument.table_info = {
         rows: @rows.length,
         ins: @header.ins.length,
         outs: @header.outs.length,
         options: options
-      )
+      }
+    end
+
+    def instrument_table_matched!
+      return unless instrumented?
+      instrument.table_matched!
+    end
+
+    def instrument_row_matched!(state, index)
+      return unless instrumented?
+      instrument.row_matched!(state, index)
     end
 
   end

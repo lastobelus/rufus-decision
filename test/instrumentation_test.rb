@@ -68,6 +68,37 @@ class InstrumentationTest < Test::Unit::TestCase
     assert_not_nil(table.instrument.result[:table], "instrument result :table")    
   end
 
+  def test_sets_matches_table
+    table = Rufus::Decision::Table.new(CSV0)
+    table.instrument = Rufus::Decision::Instruments::HashInstrument.new
+    table.transform!({"fx" => "c", "fy" => "d"})
+    assert_not_nil(table.instrument.result[:matches], "instrument result :matches")    
+    assert_not_nil(table.instrument.result[:matches][:table], "instrument result :matches :table")    
+    assert(table.instrument.result[:matches][:table], "instrument result :matches :table true")
+
+    table.transform!({"fx" => "c", "fy" => "e"})
+    assert_not_nil(table.instrument.result[:matches], "instrument result :matches")    
+    assert_not_nil(table.instrument.result[:matches][:table], "instrument result :matches :table")    
+    refute(table.instrument.result[:matches][:table], "instrument result :matches :table false")    
+  end
+
+
+  def test_sets_matches_rows
+    table = Rufus::Decision::Table.new(CSV0)
+    table.instrument = Rufus::Decision::Instruments::HashInstrument.new
+    table.transform!({"fx" => "c", "fy" => "d"})
+    assert_not_nil(table.instrument.result[:matches][:rows], "instrument result :matches :rows")    
+    assert_equal( [false, true],
+                  table.instrument.result[:matches][:rows], 
+                  "instrument result :matches :table is true")
+
+    table.transform!({"fx" => "c", "fy" => "e"})
+    assert_not_nil(table.instrument.result[:matches][:rows], 
+      "instrument result :matches :table exists")    
+    assert(table.instrument.result[:matches][:rows], 
+      "instrument result :matches :rows is empty")    
+  end
+
   def test_without_accumulate
 
     wi = {
