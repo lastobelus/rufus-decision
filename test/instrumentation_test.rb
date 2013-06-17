@@ -33,7 +33,7 @@ class InstrumentationTest < Test::Unit::TestCase
       @result = 'old_data'
     end
 
-    def method_missing
+    def method_missing(meth, *args, &block)
       nil
     end
 
@@ -56,16 +56,16 @@ class InstrumentationTest < Test::Unit::TestCase
   def test_instrument_cleared_each_run
     table = Rufus::Decision::Table.new(CSV0)
     table.instrument = MockInstrument.new
-    table.transform!("fx" => "c", "fy" => "d")
+    table.transform!({"fx" => "c", "fy" => "d"})
     assert_equal('new_data', table.instrument.result, "calling transform should clear instrument")
   end
 
-  def test_table_info
+  def test_sets_table_info
     table = Rufus::Decision::Table.new(CSV0)
     table.instrument = Rufus::Decision::Instruments::HashInstrument.new
-    table.transform!("fx" => "c", "fy" => "d")
+    table.transform!({"fx" => "c", "fy" => "d"})
     assert_not_nil(table.instrument.result, "instrument result")
-    assert_not_nil(table.instrument.result[:table], "instrument result :table")
+    assert_not_nil(table.instrument.result[:table], "instrument result :table")    
   end
 
   def test_without_accumulate
