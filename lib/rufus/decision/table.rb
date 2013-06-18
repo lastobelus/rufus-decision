@@ -364,7 +364,7 @@ module Decision
         end
         instrument_table_matched!
         instrument_row_matched!(true, index)
-        apply(row, hash)
+        apply(row, index, hash)
         break if @options[:first_match]
       end
 
@@ -421,7 +421,7 @@ module Decision
       true
     end
 
-    def apply(row, hash)
+    def apply(row, row_index, hash)
 
       @header.outs.each do |x, out_header|
 
@@ -431,7 +431,7 @@ module Decision
 
         value = Rufus::dsub(value, hash)
 
-        hash[out_header] = if @options[:accumulate]
+        new_value = if @options[:accumulate]
           #
           # accumulate
 
@@ -450,6 +450,9 @@ module Decision
 
           value
         end
+
+        instrument_apply!(row_index, x, out_header, hash[out_header], new_value)
+        hash[out_header] = new_value
       end
     end
 
@@ -597,6 +600,10 @@ module Decision
       instrument.cell_matched!(state, row_index, cell_index)
     end
 
+    def instrument_apply!(row_index, cell_index, out_header, orig_value, new_value)
+      return unless instrumented?
+      instrument.apply!(row_index, cell_index, out_header, orig_value, new_value)
+    end
   end
 
 

@@ -142,6 +142,15 @@ class InstrumentationTest < Test::Unit::TestCase
       "instrument result :matches :num is correct")
   end
 
+  def test_sets_applies
+    table = do_instrumented_transform(CSV0, {"fx" => "c", "fy" => "d"})
+    assert_not_nil(table.instrument.result[:matches][:applies])
+    assert_equal(2, table.instrument.result[:matches][:applies].length)
+    table = do_instrumented_transform(CSV1, {"fx" => "c", "fy" => "d"})
+    assert_not_nil(table.instrument.result[:matches][:applies])
+    assert_equal(4, table.instrument.result[:matches][:applies].length)
+  end
+
   def test_1_without_accumulate
 
     wi = {
@@ -159,6 +168,10 @@ class InstrumentationTest < Test::Unit::TestCase
         cells: [
           [false],
           [true, true],
+        ],
+        applies: [
+          nil,
+          {2 => {old_value: nil, new_value: "1", name: 'fz'}}
         ]
       }
     )
@@ -182,7 +195,7 @@ class InstrumentationTest < Test::Unit::TestCase
           [true, false],
           [false],
           [false]
-        ]
+        ],
       }
     )
 
@@ -209,6 +222,12 @@ class InstrumentationTest < Test::Unit::TestCase
           [true, true],
           [false],
           [true, true]
+        ],
+        applies: [
+          nil,
+          {2=>{:name=>"fz", :new_value=>"1", :old_value=>nil}},
+          nil,
+          {2=>{:name=>"fz", :new_value=>["1", "7"], :old_value=>"1"}}
         ]
       }
     )

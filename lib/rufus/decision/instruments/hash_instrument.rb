@@ -33,6 +33,13 @@ module Rufus
           @result[:matches][:cells][row_index][cell_index] = state
         end
 
+        def apply!(row_index, cell_index, header_name, old_value, new_value)
+          @result[:matches][:applies] ||= []
+          @result[:matches][:applies][row_index] ||= {}
+          @result[:matches][:applies][row_index][cell_index] = 
+            {old_value: old_value, new_value: new_value, name: header_name}
+
+        end
       end
     end
   end
