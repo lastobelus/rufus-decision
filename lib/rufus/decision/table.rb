@@ -358,7 +358,7 @@ module Decision
       hash = Rufus::Decision::EvalHashFilter.new(hash) if @options[:ruby_eval]
 
       @rows.each_with_index do |row, index|
-        unless matches?(row, hash)
+        unless matches?(row, index, hash)
           instrument_row_matched!(false, index)
           next
         end
@@ -386,7 +386,8 @@ module Decision
 
     # Returns true if the hash matches the in: values for this row
     #
-    def matches?(row, hash)
+    def matches?(row, row_index, hash)
+
 
       @header.ins.each do |x, in_header|
 
@@ -396,17 +397,25 @@ module Decision
 
         cell = row[x]
 
-        next if cell == nil || cell == ''
+        if cell == nil || cell == ''
+          instrument_cell_matched!(true, row_index, x)
+          next
+        end
 
-        return false unless @matchers.any? { |matcher|
+        matched = @matchers.any? { |matcher|
 
           c = matcher.cell_substitution? ? Rufus::dsub(cell, hash) : cell
           m = matcher.matches?(c, value)
 
-          break false if m == :break
+          if m == :break
+          instrument_cell_matched!(true, row_index, x)
+            break false
+          end
 
           m
         }
+        instrument_cell_matched!(matched, row_index, x)
+        return false unless matched
       end
 
       true
@@ -581,6 +590,11 @@ module Decision
     def instrument_row_matched!(state, index)
       return unless instrumented?
       instrument.row_matched!(state, index)
+    end
+
+    def instrument_cell_matched!(state, row_index, cell_index)
+      return unless instrumented?
+      instrument.cell_matched!(state, row_index, cell_index)
     end
 
   end

@@ -10,7 +10,7 @@ module Rufus
         end
 
         def clear!
-          @result.replace({matches: {table: false, rows: []}})
+          @result.replace({matches: {table: false, rows: [], cells: []}})
         end
 
 
@@ -24,6 +24,13 @@ module Rufus
 
         def row_matched!(state, index)          
           @result[:matches][:rows][index] = state
+          @result[:matches][:num] ||= 0
+          @result[:matches][:num] += 1 if state
+        end
+
+        def cell_matched!(state, row_index, cell_index)          
+          @result[:matches][:cells][row_index] ||= []
+          @result[:matches][:cells][row_index][cell_index] = state
         end
 
       end
