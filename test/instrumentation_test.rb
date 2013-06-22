@@ -15,7 +15,7 @@ module InstrumentationTestMixin
   end
 
   def default_table_options
-    {first_match: true, ignore_case: nil, unbounded:nil}
+    {:first_match => true, :ignore_case => nil, :unbounded => nil}
   end
 
   def instrumented_table(table_data)
@@ -160,18 +160,18 @@ class InstrumentationTest < Test::Unit::TestCase
     table = do_instrumented_test(CSV0, wi, { "fz" => "1" }, false)
     assert_instrumentation(
       table,
-      table: { rows: 3, ins: 2, outs: 1, options: default_table_options },
-      matches: {
-        table: true,
-        rows: [false, true],
-        num: 1,
-        cells: [
+      :table => { :rows => 3, :ins => 2, :outs => 1, :options => default_table_options },
+      :matches => {
+        :table => true,
+        :rows => [false, true],
+        :num => 1,
+        :cells => [
           [false],
           [true, true],
         ],
-        applies: [
+        :applies => [
           nil,
-          {2 => {old_value: nil, new_value: "1", name: 'fz'}}
+          {2 => {:old_value => nil, :new_value => "1", :name => 'fz'}}
         ]
       }
     )
@@ -186,12 +186,12 @@ class InstrumentationTest < Test::Unit::TestCase
     table = do_instrumented_test(CSV0, wi, { "fz" => nil }, false)
     assert_instrumentation(
       table,
-      table: { rows: 3, ins: 2, outs: 1, options: default_table_options  },
-      matches: {
-        table: false,
-        rows: [false, false, false],
-        num: 0,
-        cells: [
+      :table => { :rows => 3, :ins => 2, :outs => 1, :options => default_table_options  },
+      :matches => {
+        :table => false,
+        :rows => [false, false, false],
+        :num => 0,
+        :cells => [
           [true, false],
           [false],
           [false]
@@ -212,18 +212,19 @@ class InstrumentationTest < Test::Unit::TestCase
     table = do_instrumented_test(CSV1, wi, { "fz" => "1;7" }, false)
     assert_instrumentation(
       table,
-      table: { rows: 4, ins: 2, outs: 1, options: default_table_options.merge(accumulate:true, first_match: false) },
-      matches: {
-        table: true,
-        rows: [false, true, false, true],
-        num: 2,
-        cells: [
+      :table => { :rows => 4, :ins => 2, :outs => 1, 
+        :options => default_table_options.merge(:accumulate => true, :first_match => false) },
+      :matches => {
+        :table => true,
+        :rows => [false, true, false, true],
+        :num => 2,
+        :cells => [
           [false],
           [true, true],
           [false],
           [true, true]
         ],
-        applies: [
+        :applies => [
           nil,
           {2=>{:name=>"fz", :new_value=>"1", :old_value=>nil}},
           nil,

@@ -10,7 +10,7 @@ module Rufus
         end
 
         def clear!
-          @result.replace({matches: {table: false, rows: [], cells: []}})
+          @result.replace({:matches => {:table => false, :rows => [], :cells => []}})
         end
 
 
@@ -18,26 +18,26 @@ module Rufus
           @result[:table] = hash
         end
 
-        def table_matched!
+        def matched
           @result[:matches][:table] = true
         end
 
-        def row_matched!(state, index)          
+        def row_matched(state, index)          
           @result[:matches][:rows][index] = state
           @result[:matches][:num] ||= 0
           @result[:matches][:num] += 1 if state
         end
 
-        def cell_matched!(state, row_index, cell_index)          
+        def cell_matched(state, row_index, cell_index)          
           @result[:matches][:cells][row_index] ||= []
           @result[:matches][:cells][row_index][cell_index] = state
         end
 
-        def apply!(row_index, cell_index, header_name, old_value, new_value)
+        def applied(row_index, cell_index, header_name, old_value, new_value)
           @result[:matches][:applies] ||= []
           @result[:matches][:applies][row_index] ||= {}
           @result[:matches][:applies][row_index][cell_index] = 
-            {old_value: old_value, new_value: new_value, name: header_name}
+            {:old_value => old_value, :new_value => new_value, :name => header_name}
 
         end
       end

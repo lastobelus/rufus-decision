@@ -353,17 +353,17 @@ module Decision
     def transform!(hash)
 
       instrument.clear! if instrumented?
-      instrument_table_info!
+      table_info
 
       hash = Rufus::Decision::EvalHashFilter.new(hash) if @options[:ruby_eval]
 
       @rows.each_with_index do |row, index|
         unless matches?(row, index, hash)
-          instrument_row_matched!(false, index)
+          row_matched(false, index)
           next
         end
-        instrument_table_matched!
-        instrument_row_matched!(true, index)
+        matched
+        row_matched(true, index)
         apply(row, index, hash)
         break if @options[:first_match]
       end
@@ -398,7 +398,7 @@ module Decision
         cell = row[x]
 
         if cell == nil || cell == ''
-          instrument_cell_matched!(true, row_index, x)
+          cell_matched(true, row_index, x)
           next
         end
 
@@ -408,13 +408,13 @@ module Decision
           m = matcher.matches?(c, value)
 
           if m == :break
-          instrument_cell_matched!(true, row_index, x)
+          cell_matched(true, row_index, x)
             break false
           end
 
           m
         }
-        instrument_cell_matched!(matched, row_index, x)
+        cell_matched(matched, row_index, x)
         return false unless matched
       end
 
@@ -451,7 +451,7 @@ module Decision
           value
         end
 
-        instrument_apply!(row_index, x, out_header, hash[out_header], new_value)
+        applied(row_index, x, out_header, hash[out_header], new_value)
         hash[out_header] = new_value
       end
     end
@@ -575,34 +575,34 @@ module Decision
     end
 
     # 
-    def instrument_table_info!
+    def table_info
       return unless instrumented?
       instrument.table_info = {
-        rows: @rows.length,
-        ins: @header.ins.length,
-        outs: @header.outs.length,
-        options: options
+        :rows => @rows.length,
+        :ins => @header.ins.length,
+        :outs => @header.outs.length,
+        :options => options
       }
     end
 
-    def instrument_table_matched!
+    def matched
       return unless instrumented?
-      instrument.table_matched!
+      instrument.matched
     end
 
-    def instrument_row_matched!(state, index)
+    def row_matched(state, index)
       return unless instrumented?
-      instrument.row_matched!(state, index)
+      instrument.row_matched(state, index)
     end
 
-    def instrument_cell_matched!(state, row_index, cell_index)
+    def cell_matched(state, row_index, cell_index)
       return unless instrumented?
-      instrument.cell_matched!(state, row_index, cell_index)
+      instrument.cell_matched(state, row_index, cell_index)
     end
 
-    def instrument_apply!(row_index, cell_index, out_header, orig_value, new_value)
+    def applied(row_index, cell_index, out_header, orig_value, new_value)
       return unless instrumented?
-      instrument.apply!(row_index, cell_index, out_header, orig_value, new_value)
+      instrument.applied(row_index, cell_index, out_header, orig_value, new_value)
     end
   end
 
