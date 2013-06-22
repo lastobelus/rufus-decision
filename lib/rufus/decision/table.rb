@@ -429,7 +429,11 @@ module Decision
 
         next if value == nil || value == ''
 
-        value = Rufus::dsub(value, hash)
+        begin
+          value = Rufus::dsub(value, hash)
+        rescue
+          raise $!, "Error substituting in #{value} -> #{$!}", $!.backtrace
+        end
 
         new_value = if @options[:accumulate]
           #
