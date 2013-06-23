@@ -76,6 +76,7 @@ class Dt6Test < Test::Unit::TestCase
   end
 
   def test_accumulate_ignores_blanks
+
     table = Rufus::Decision::Table.new(DUPES_AND_BLANKS, :accumulate => true)
     wi = {
       "fx" => "a",
@@ -91,18 +92,47 @@ class Dt6Test < Test::Unit::TestCase
 # Proposed accumulate-all option
 
   def test_accumulate_all_without_dupes_or_existing_value_is_noop
+    table = Rufus::Decision::Table.new(NO_DUPES, :accumulate_all => true)
+    wi = {
+      "fx" => "a",
+      "fy" => "b"
+    }
+    do_test(table, wi, { "fz" => "0" }, false)
   end
 
   def test_accumulate_all_without_dupes_overwrites_existing_value
+    table = Rufus::Decision::Table.new(NO_DUPES, :accumulate_all => true)
+    wi = {
+      "fx" => "a",
+      "fy" => "b",
+      "fz" => 'k'
+    }
+    do_test(table, wi, { "fz" => "0" }, false)
   end
 
   def test_accumulate_all_with_dupes_overwrites_existing_value
-  end
 
-  def test_accumulate_all_with_dupes_collects
+    table = Rufus::Decision::Table.new(DUPES, :accumulate_all => true)
+    wi = {
+      "fx" => "a",
+      "fy" => "b",
+      "fz" => 'k'
+    }
+
+    # This demonstrates correct "alignment" with accumulate-all option
+    do_test(table, wi, { "fz" => "0;2;4", "fk" => "m;o;q" }, false)
   end
 
   def test_accumulate_all_includes_blanks
+
+    table = Rufus::Decision::Table.new(DUPES_AND_BLANKS, :accumulate_all => true)
+    wi = {
+      "fx" => "a",
+      "fy" => "b",
+    }
+
+    # This demonstrates correct "alignment" with accumulate-all option
+    do_test(table, wi, { "fz" => "0;;6", "fm" => ";3;7" }, false)
   end
 
 end
